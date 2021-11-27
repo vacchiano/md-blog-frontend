@@ -1,10 +1,37 @@
-import React from 'react'
-import {Header} from 'semantic-ui-react'
+import React, {useEffect, useState} from 'react'
+import { NavLink } from 'react-router-dom'
+import {Divider, Header, Item} from 'semantic-ui-react'
+import axios from 'axios'
+import Loader from '../components/Loader'
+import Message from '../components/Message'
+import { api } from '../api'
+import { useFetch } from '../helpers'
 
 const PostList = () => {
+    const {data, loading, error} = useFetch(api.posts.list)
+
     return (
         <div>
             <Header>Post List</Header>
+            <Divider />
+            {error && <Message negative message={error} />}
+            {loading && <Loader />}
+            <Item.Group>
+                {data?.map(post => {
+                    return (
+                        <Item key={post.id}>
+                            <Item.Image size='small' src={post.thumbnail} />
+
+                            <Item.Content>
+                                <NavLink to={`/posts/${post.slug}`}>
+                                    <Item.Header as='span'>{post.title}</Item.Header>
+                                </NavLink>
+                                <Item.Description>{post.content}</Item.Description>
+                            </Item.Content>
+                        </Item>
+                    )
+                })}
+            </Item.Group>
         </div>
     )
 }
